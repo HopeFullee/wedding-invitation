@@ -1,70 +1,31 @@
-# Getting Started with Create React App
+# 온라인 청첩장 DIY
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 목표
 
-## Available Scripts
+- 직접 사용할 온라인 청첩장 개발
+- RTL/Vitest/StoryBook '테스트 코드' 작성, 'CI/CD' 파이프라인 구축 경험하기
+- 웹분석 툴 연동으로 50명 + @ 방문객의 Web Vitals 성능 측정 및 개선
+- TODO 체크리스트 올클리어 이후 의미 있는 포폴로 활용하기
 
-In the project directory, you can run:
+## TODO
 
-### `npm start`
+- #### UI/UX 마크업
+  - Swiper Slides 기반 이미지 슬라이더 적용
+  - 예식장 위치 지도 적용
+    - 카카오맵, 티맵, 네이버지도 '아이콘' 클릭시 자동 어플 실행 적용
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- #### 테스트 코드 작성
+  - RTL, Vitest 테스트 코드 작성
+  - Storybook UI 테스트 코드 작성
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- #### CI/CD 파이프라인 구축
+  - husky 기반 로컬 테스트 적용 (서버 비용 절감)
+  - Github Actions 기반 CI 자동 테스트 적용 (dev -> master 병합 시점에만 테스트 적용)
+  - Vercel 기반 CD 자동 배포 적용
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- #### Web Vitals 코어 웹성능 측정
+  - PostHog 웹분석 툴 연동 이후 실제 유저 환경 관측
+    - 로딩 성능 측정: Largest Contentful Paint (LCP) 측정 및 개선
+    - 상호작용 측정: Interaction to Next Page (INP) 측정 및 개선
+    - 시각적 안정석 측정: Cumulative Layout Shift (CLS) 측정 및 개선
+    - 사용자 활동 범위 측정: PostHog 기반 HeatMap 관측
