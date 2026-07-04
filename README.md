@@ -29,3 +29,4 @@
     - 상호작용 측정: Interaction to Next Page (INP) 측정 및 개선
     - 시각적 안정석 측정: Cumulative Layout Shift (CLS) 측정 및 개선
     - 사용자 활동 범위 측정: PostHog 기반 HeatMap 관측
+  - 부하 테스트 경험해보기 (희망사항)
