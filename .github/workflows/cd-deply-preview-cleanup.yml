@@ -1,0 +1,56 @@
+name: CD Deploy Preview Cleanup
+
+# main(master)을 대상으로 한 PR이 닫힐 때(merge 여부와 무관하게) 실행됩니다.
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup-preview:
+    name: Remove Vercel Preview Deployments
+    runs-on: ubuntu-latest
+
+    steps:
+      # Vercel REST API로 이 PR의 소스 브랜치(head_ref)에 해당하는 preview 배포 목록을 조회한 뒤,
+      # 하나씩 삭제합니다. (vercel CLI 대신 REST API를 쓰는 이유: 배포 ID를 미리 알 필요 없이
+      # "이 브랜치의 배포 전부"를 조건으로 찾아 지울 수 있어서입니다)
+      #
+      # 참고: teamId 파라미터는 Vercel Team(조직) 플랜에서만 필요합니다.
+      # Hobby(개인) 플랜 프로젝트는 projectId + token만으로 조회/삭제가 가능하므로 넣지 않습니다.
+      # 만약 나중에 Team 플랜으로 전환하신다면, VERCEL_TEAM_ID 시크릿을 추가하고
+      # 아래 두 curl 요청의 쿼리스트링에 &teamId=${VERCEL_TEAM_ID}를 다시 붙여주시면 됩니다.
+      - name: 이 브랜치의 Preview 배포 삭제
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          echo "브랜치 '$BRANCH'에 대한 preview 배포를 조회합니다..."
+
+          RESPONSE=$(curl -s -X GET \
+            "https://api.vercel.com/v6/deployments?projectId=${VERCEL_PROJECT_ID}" \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}")
+
+          # githubCommitRef(=브랜치명)가 이 PR의 head 브랜치와 일치하는 배포의 uid만 추출합니다.
+          DEPLOYMENT_IDS=$(echo "$RESPONSE" | jq -r --arg BRANCH "$BRANCH" \
+            '.deployments[] | select(.meta.githubCommitRef == $BRANCH) | .uid')
+
+          if [ -z "$DEPLOYMENT_IDS" ]; then
+            echo "삭제할 preview 배포가 없습니다."
+            exit 0
+          fi
+
+          for ID in $DEPLOYMENT_IDS; do
+            echo "삭제 중: $ID"
+            curl -s -X DELETE \
+              "https://api.vercel.com/v13/deployments/${ID}" \
+              -H "Authorization: Bearer ${VERCEL_TOKEN}"
+            echo "삭제 완료: $ID"
+          done

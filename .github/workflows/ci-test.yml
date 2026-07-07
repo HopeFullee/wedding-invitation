@@ -1,31 +1,34 @@
-name: auto-test
+name: CI Test
 
-# main(master) 브랜치로 향하는 Pull Request에서만 실행됩니다.
-# (dev, feature/* 등 브랜치명은 자유형이므로, "어떤 브랜치에서 왔는지"가 아니라
-#  "main/master로 들어오는 PR인지"를 기준으로 필터링합니다.)
+# main(master) 브랜치로 향하는 Pull Request(PR 리뷰 단계)와,
+# main(master)에 실제로 merge(push)되는 시점 둘 다에서 실행됩니다.
+# - pull_request: PR 리뷰 중 매 커밋마다 검증 (브랜치 보호 규칙이 이 결과를 참조합니다)
+# - push:         merge 커밋 자체에 대한 최종 검증 (cd-deploy-production.yml이 이 실행 결과를 구독합니다)
 on:
   pull_request:
     branches:
       - main
       - master
+  push:
+    branches:
+      - main
+      - master
 
-# 이 워크플로우가 리포지토리에 대해 가질 권한을 최소화합니다.
-# (코드를 읽기만 하면 되므로 그 외 권한은 부여하지 않습니다)
+# 이 워크플로우는 "실행"만 담당하므로 코드를 읽는 권한만 있으면 됩니다.
+# PR 코멘트 작성 등의 쓰기 권한은 ci-report.yml 쪽에서 별도로 가집니다.
 permissions:
   contents: read
 
-# 같은 PR에서 커밋을 push하면 이전 실행은 취소하고 최신 커밋만 검사합니다.
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number }}
+  group: ci-test-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test-and-build:
-    name: Lint, Unit Test & Build Check
+  test:
+    name: Lint, Unit Test & Build
     runs-on: ubuntu-latest
 
     # husky의 prepare 스크립트가 npm ci 시 자동 실행되는 것을 방지합니다.
-    # (CI 환경에는 git hook 설정이 불필요하고, 오히려 실패 원인이 될 수 있습니다)
     env:
       HUSKY: "0"
 
@@ -42,13 +45,59 @@ jobs:
       - name: 의존성 설치 (package-lock.json 기준 고정 설치)
         run: npm ci
 
-      - name: ESLint 검사
-        run: npm run lint
+      # 실패해도 결과 파일은 남겨서 아티팩트로 업로드해야 하므로 continue-on-error 사용.
+      # 최종 성공/실패 판단은 맨 아래 "최종 결과 판단" 스텝에서 합니다.
+      - name: ESLint 검사 (JSON 리포트 생성)
+        id: eslint
+        continue-on-error: true
+        run: npm run lint -- --format json --output-file eslint-report.json
 
-      - name: Vitest 단위 테스트
-        # test 스크립트가 "vitest" (watch 모드)이므로 --run으로 1회성 실행을 강제합니다.
-        run: npm run test -- --run
+      - name: Vitest 단위 테스트 (coverage 포함)
+        id: vitest
+        continue-on-error: true
+        run: npm run test -- --run --coverage
 
-      - name: 빌드 (타입 체크 + 번들링, 충돌 여부 확인)
-        # build 스크립트에 "tsc -b"가 포함되어 있어 타입 에러도 함께 검출됩니다.
-        run: npm run build
+      - name: 빌드 (타입 체크 + 번들링)
+        id: build
+        continue-on-error: true
+        run: npm run build 2>&1 | tee build-log.txt
+
+      # 각 스텝의 성공/실패 결과와 PR 번호를 파일로 남겨서
+      # ci-report.yml이 workflow_run 시점에 참고할 수 있게 합니다.
+      - name: 결과 메타데이터 저장
+        if: always()
+        run: |
+          mkdir -p ci-meta
+          echo "${{ github.event_name }}" > ci-meta/event-name.txt
+          echo "${{ github.event.pull_request.number }}" > ci-meta/pr-number.txt
+          echo "eslint=${{ steps.eslint.outcome }}"  > ci-meta/status.txt
+          echo "vitest=${{ steps.vitest.outcome }}" >> ci-meta/status.txt
+          echo "build=${{ steps.build.outcome }}"   >> ci-meta/status.txt
+
+      # coverage, eslint 리포트, build 로그, 메타데이터를 하나의 아티팩트로 업로드합니다.
+      # ci-report.yml이 이 아티팩트를 다운로드해서 실제 리포트를 PR에 게시합니다.
+      - name: 리포트용 아티팩트 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-reports
+          path: |
+            coverage/coverage-summary.json
+            coverage/coverage-final.json
+            eslint-report.json
+            build-log.txt
+            ci-meta/
+          if-no-files-found: warn
+          retention-days: 7
+
+      # continue-on-error로 넘어간 스텝들의 실제 성공 여부를 여기서 최종 판단합니다.
+      # 이 스텝이 실패해야 이 워크플로우(그리고 브랜치 보호 규칙)가 최종 "실패"로 표시됩니다.
+      - name: 최종 결과 판단
+        if: always()
+        run: |
+          if [ "${{ steps.eslint.outcome }}" != "success" ] || \
+             [ "${{ steps.vitest.outcome }}" != "success" ] || \
+             [ "${{ steps.build.outcome }}" != "success" ]; then
+            echo "하나 이상의 검사가 실패했습니다. (eslint: ${{ steps.eslint.outcome }}, vitest: ${{ steps.vitest.outcome }}, build: ${{ steps.build.outcome }})"
+            exit 1
+          fi
