@@ -1,57 +1,49 @@
 name: CI Report
 
-# "CI Test" 워크플로우가 끝나면(성공하든 실패하든) 트리거됩니다.
 on:
   workflow_run:
     workflows: ["CI Test PR"]
     types:
       - completed
 
-# 이 워크플로우는 PR에 코멘트/어노테이션을 다는 "리포트" 역할이므로 쓰기 권한이 필요합니다.
 permissions:
   contents: read
-  pull-requests: write # coverage 요약을 PR 코멘트로 게시
-  checks: write # eslint 결과를 인라인 어노테이션으로 게시
-  actions: read # 트리거한 워크플로우(ci-test.yml)의 아티팩트를 읽기 위함
+  pull-requests: write
+  checks: write
+  actions: read
 
 jobs:
   report:
     name: Publish Test Reports to PR
     runs-on: ubuntu-latest
-    # 취소된 실행에 대해서는 리포트를 게시하지 않습니다. (성공/실패는 리포트 게시)
     if: github.event.workflow_run.conclusion != 'cancelled'
 
     steps:
-      # eslint 어노테이션이 파일 경로를 리포지토리 기준으로 정확히 매핑하려면 체크아웃이 필요합니다.
       - name: 코드 체크아웃 (PR head 기준)
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
-      # ci-test.yml에서 업로드한 아티팩트(coverage, eslint-report.json, build-log.txt, ci-meta)를 받아옵니다.
+      # [수정] 부모 워크플로우(workflow_run)의 이벤트와 SHA를 조합하여 동적 이름으로 다운로드합니다.
+      # ci-test-base.yml에 설정한 패턴과 정확히 일치해야 합니다.
+      # 여기서는 "CI Test PR"이 트리거이므로 event_name은 'pull_request'가 됩니다.
       - name: 테스트 결과 아티팩트 다운로드
         uses: actions/download-artifact@v4
         with:
-          name: ci-reports
+          name: ci-reports-${{ github.event.workflow_run.event }}-${{ github.event.workflow_run.head_sha }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
           path: ci-reports
 
-      # workflow_run 이벤트에는 PR 번호가 직접 없으므로, 같은 리포지토리 내 PR이라면
-      # github.event.workflow_run.pull_requests에서 바로 가져올 수 있습니다.
-      # (포크에서 온 PR까지 지원하려면 REST API로 head_sha를 매칭해 조회해야 하지만,
-      #  이 프로젝트는 팀 내부 브랜치 전략이라 이 방식으로 충분합니다)
       - name: PR 번호 확인
         id: pr
         run: |
           PR_NUMBER="${{ github.event.workflow_run.pull_requests[0].number }}"
-          if [ -z "$PR_NUMBER" ]; then
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
             PR_NUMBER=$(cat ci-reports/ci-meta/pr-number.txt)
           fi
           echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
 
-      # coverage/coverage-summary.json, coverage/coverage-final.json을 읽어
-      # PR 코멘트 + 이 워크플로우 실행의 Summary 탭에 커버리지 표를 게시합니다.
       - name: Coverage 리포트 게시
         uses: davelosert/vitest-coverage-report-action@v2
         with:
@@ -60,15 +52,12 @@ jobs:
           json-final-path: ci-reports/coverage/coverage-final.json
           pr-number: ${{ steps.pr.outputs.number }}
 
-      # eslint-report.json(JSON 형식)을 읽어 PR의 "Files changed" 탭에
-      # 문제 있는 라인마다 인라인 어노테이션을 답니다.
       - name: ESLint 리포트 게시
         uses: ataylorme/eslint-annotate-action@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           report-json: ci-reports/eslint-report.json
 
-      # 빌드 로그와 성공/실패 여부를 이 워크플로우 실행의 Summary 탭에 표시합니다.
       - name: 빌드 결과 리포트 게시
         run: |
           BUILD_STATUS=$(grep "^build=" ci-reports/ci-meta/status.txt | cut -d= -f2)
