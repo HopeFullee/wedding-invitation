@@ -1,0 +1,18 @@
+name: CI Test PR
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+
+concurrency:
+  group: ci-test-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  call-base-ci:
+    # 저장소 내의 베이스 워크플로우 경로를 지정합니다 (상대 경로 가능)
+    uses: ./.github/workflows/ci-test-base.yml
+    # 만약 다른 권한이 필요하다면 여기서 상속해줄 수 있습니다.
+    secrets: inherit
