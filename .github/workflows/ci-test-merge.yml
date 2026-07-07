@@ -1,0 +1,16 @@
+name: CI Test Merge
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+concurrency:
+  group: ci-test-merge-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  call-base-ci:
+    uses: ./.github/workflows/ci-test-base.yml
+    secrets: inherit

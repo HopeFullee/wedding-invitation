@@ -1,27 +1,11 @@
-name: CI Test
+name: CI Test Base
 
-# main(master) 브랜치로 향하는 Pull Request(PR 리뷰 단계)와,
-# main(master)에 실제로 merge(push)되는 시점 둘 다에서 실행됩니다.
-# - pull_request: PR 리뷰 중 매 커밋마다 검증 (브랜치 보호 규칙이 이 결과를 참조합니다)
-# - push:         merge 커밋 자체에 대한 최종 검증 (cd-deploy-production.yml이 이 실행 결과를 구독합니다)
+# 다른 워크플로우에서 호출할 수 있도록 workflow_call로 설정합니다.
 on:
-  pull_request:
-    branches:
-      - main
-      - master
-  push:
-    branches:
-      - main
-      - master
+  workflow_call:
 
-# 이 워크플로우는 "실행"만 담당하므로 코드를 읽는 권한만 있으면 됩니다.
-# PR 코멘트 작성 등의 쓰기 권한은 ci-report.yml 쪽에서 별도로 가집니다.
 permissions:
   contents: read
-
-concurrency:
-  group: ci-test-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
 
 jobs:
   test:
@@ -69,7 +53,9 @@ jobs:
         run: |
           mkdir -p ci-meta
           echo "${{ github.event_name }}" > ci-meta/event-name.txt
-          echo "${{ github.event.pull_request.number }}" > ci-meta/pr-number.txt
+          # PR 이벤트가 아닐 경우 빈 값이 들어가는 것을 방지하기 위해 처리
+          PR_NUM="${{ github.event.pull_request.number }}"
+          echo "${PR_NUM:-none}" > ci-meta/pr-number.txt
           echo "eslint=${{ steps.eslint.outcome }}"  > ci-meta/status.txt
           echo "vitest=${{ steps.vitest.outcome }}" >> ci-meta/status.txt
           echo "build=${{ steps.build.outcome }}"   >> ci-meta/status.txt
@@ -80,7 +66,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ci-reports
+          name: ci-reports-${{ github.event_name }}-${{ github.sha }}
           path: |
             coverage/coverage-summary.json
             coverage/coverage-final.json

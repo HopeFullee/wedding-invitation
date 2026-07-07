@@ -3,7 +3,7 @@ name: CI Report
 # "CI Test" 워크플로우가 끝나면(성공하든 실패하든) 트리거됩니다.
 on:
   workflow_run:
-    workflows: ["CI Test"]
+    workflows: ["CI Test PR"]
     types:
       - completed
 

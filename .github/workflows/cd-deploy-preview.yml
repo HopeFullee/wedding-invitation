@@ -4,7 +4,7 @@ name: CD Deploy Preview
 # 아래 job의 if 조건에서 "pull_request 이벤트로 트리거되었고, 성공했을 때"만 preview를 배포합니다.
 on:
   workflow_run:
-    workflows: ["CI Test"]
+    workflows: ["CI Test PR"]
     types:
       - completed
 
