@@ -1,4 +1,4 @@
-name: CI Test (Merge)
+name: CI Test Merge
 
 # main(master)으로 실제 merge(push)되는 시점에 실행됩니다.
 # merge된 커밋 자체에 대한 최종 검증이며, cd-deploy-production.yml이
