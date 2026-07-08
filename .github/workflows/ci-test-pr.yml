@@ -1,18 +1,21 @@
 name: CI Test PR
 
+# main(master) 브랜치로 향하는 Pull Request 리뷰 단계(매 커밋)에서 실행됩니다.
+# 브랜치 보호 규칙(Required status checks)은 이 워크플로우의 결과를 참조합니다.
 on:
   pull_request:
     branches:
       - main
       - master
 
+permissions:
+  contents: read
+
 concurrency:
   group: ci-test-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
-  call-base-ci:
-    # 저장소 내의 베이스 워크플로우 경로를 지정합니다 (상대 경로 가능)
+  call-ci-test:
+    name: Run CI Test
     uses: ./.github/workflows/ci-test-base.yml
-    # 만약 다른 권한이 필요하다면 여기서 상속해줄 수 있습니다.
-    secrets: inherit

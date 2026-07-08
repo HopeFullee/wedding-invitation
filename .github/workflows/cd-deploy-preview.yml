@@ -1,5 +1,6 @@
 name: CD Deploy Preview
 
+# "CI Test (PR)" 워크플로우(=PR 리뷰 단계)가 완료되면 트리거됩니다.
 on:
   workflow_run:
     workflows: ["CI Test PR"]
@@ -8,38 +9,23 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
-  statuses: write # 👈 PR 커밋에 성공/실패 신호를 직접 찌르기 위해 필수로 추가합니다.
+  pull-requests: write # preview URL을 PR 코멘트로 게시하기 위함
 
 concurrency:
-  # github.event.workflow_run.head_sha를 사용하여 안전하게 해당 커밋(PR)별로 동시성을 제어합니다.
-  group: cd-deploy-preview-${{ github.event.workflow_run.head_sha }}
+  # 같은 PR에서 여러 번 push해도, 이전 preview 배포 작업은 취소하고 최신 것만 남깁니다.
+  group: cd-deploy-preview-${{ github.event.workflow_run.pull_requests[0].number }}
   cancel-in-progress: true
 
 jobs:
   deploy-preview:
     name: Deploy to Vercel (Preview)
     runs-on: ubuntu-latest
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'pull_request'
+    # "CI Test (PR)"는 이제 pull_request 트리거 전용 워크플로우이므로
+    # 성공 여부만 확인하면 됩니다. (이벤트 종류로 다시 필터링할 필요가 없어졌습니다)
+    if: github.event.workflow_run.conclusion == 'success'
 
     steps:
-      # 1. 작업 시작하자마자 PR 대시보드에 "나 지금 배포 중이야(pending)"라고 상태를 변경합니다.
-      # 이 순간 PR 창의 회색 'Expected'가 노란색 'Pending' 회전초로 바뀝니다.
-      - name: Set Commit Status to Pending
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: '${{ github.event.workflow_run.head_sha }}',
-              state: 'pending',
-              context: 'Deploy to Vercel (Preview)', # 👈 Branch Ruleset에 등록한 이름과 정확히 대소문자까지 일치해야 합니다.
-              description: 'Vercel Preview 배포를 진행하고 있습니다...'
-            });
-
+      # PR의 최신 커밋(head_sha) 기준으로 체크아웃합니다.
       - name: 코드 체크아웃 (PR head 기준)
         uses: actions/checkout@v4
         with:
@@ -74,26 +60,14 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_USER_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-      # 안전하게 아티팩트나 컨텍스트를 우회하여 PR 번호 획득 (안전장치 삼아 분기 처리)
-      - name: PR 번호 구하기
-        id: get-pr
-        run: |
-          PR_NUMBER="${{ github.event.workflow_run.pull_requests[0].number }}"
-          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
-            # 만약 빈 값이라면 API를 통해 head_sha에 매핑된 PR을 직접 조회합니다.
-            PR_NUMBER=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.event.workflow_run.head_sha }}/pulls" \
-              | jq '.[0].number')
-          fi
-          echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-
+      # PR에 코멘트를 남깁니다. 같은 PR에 여러 번 push해도 코멘트를 새로 쌓지 않고,
+      # 기존에 남긴 "Preview 배포" 코멘트를 찾아 내용만 갱신합니다(sticky comment).
       - name: PR에 Preview URL 코멘트 게시
-        if: steps.get-pr.outputs.number != 'null'
         uses: actions/github-script@v7
         with:
           script: |
-            const prNumber = parseInt('${{ steps.get-pr.outputs.number }}');
-            const marker = "";
+            const prNumber = context.payload.workflow_run.pull_requests[0].number;
+            const marker = "<!-- vercel-preview-comment -->";
             const body = `${marker}\n### ▲ Vercel Preview 배포 완료\n\n- **URL**: ${{ steps.deploy.outputs.url }}\n- **커밋**: \`${{ github.event.workflow_run.head_sha }}\``;
 
             const comments = await github.rest.issues.listComments({
@@ -119,23 +93,3 @@ jobs:
                 body,
               });
             }
-
-      # 2. [최종 단계] 배포 성공/실패 여부를 판단하여 PR Status를 업데이트합니다.
-      # 이 스텝이 정상 실행되어야 PR의 초록색 'Merge' 버튼이 활성화됩니다.
-      - name: Set Commit Status to Success or Failure
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const jobConclusion = '${{ job.status }}' === 'success' ? 'success' : 'failure';
-            const description = jobConclusion === 'success' ? '배포가 완료되었습니다! 이제 머지할 수 있습니다.' : '배포 중 에러가 발생했습니다.';
-
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: '${{ github.event.workflow_run.head_sha }}',
-              state: jobConclusion,
-              context: 'Deploy to Vercel (Preview)',
-              description: description,
-              target_url: '${{ steps.deploy.outputs.url }}'
-            });

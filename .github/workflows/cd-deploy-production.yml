@@ -1,7 +1,6 @@
 name: CD Deploy Production
 
-# "CI Test" 워크플로우가 완료되면 트리거됩니다.
-# 아래 job의 if 조건에서 "push 이벤트로 트리거되었고, 성공했을 때"만 실제로 배포합니다.
+# "CI Test (Merge)" 워크플로우(=main/master로의 merge 시점)가 완료되면 트리거됩니다.
 on:
   workflow_run:
     workflows: ["CI Test Merge"]
@@ -20,13 +19,9 @@ jobs:
   deploy-production:
     name: Deploy to Vercel (Production)
     runs-on: ubuntu-latest
-    # 조건 1) CI Test가 성공으로 끝났을 것
-    # 조건 2) 그 실행이 "push" 이벤트(=main/master로의 merge)에 의한 것일 것
-    #        (PR 리뷰 단계의 pull_request 이벤트에서는 절대 production을 배포하지 않습니다)
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'push' &&
-      (github.event.workflow_run.head_branch == 'main' || github.event.workflow_run.head_branch == 'master')
+    # "CI Test (Merge)"는 이제 push(main/master) 트리거 전용 워크플로우이므로
+    # 성공 여부만 확인하면 됩니다. (이벤트 종류로 다시 필터링할 필요가 없어졌습니다)
+    if: github.event.workflow_run.conclusion == 'success'
 
     steps:
       # merge된 실제 커밋(head_sha) 기준으로 체크아웃합니다.

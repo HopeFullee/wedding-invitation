@@ -1,16 +1,22 @@
-name: CI Test Merge
+name: CI Test (Merge)
 
+# main(master)으로 실제 merge(push)되는 시점에 실행됩니다.
+# merge된 커밋 자체에 대한 최종 검증이며, cd-deploy-production.yml이
+# 이 워크플로우 이름을 workflow_run으로 구독해 production 배포를 트리거합니다.
 on:
   push:
     branches:
       - main
       - master
 
+permissions:
+  contents: read
+
 concurrency:
   group: ci-test-merge-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  call-base-ci:
+  call-ci-test:
+    name: Run CI Test
     uses: ./.github/workflows/ci-test-base.yml
-    secrets: inherit
