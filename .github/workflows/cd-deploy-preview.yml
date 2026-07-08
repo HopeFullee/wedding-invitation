@@ -1,35 +1,39 @@
 name: CD Deploy Preview
 
-# "CI Test (PR)" 워크플로우(=PR 리뷰 단계)가 완료되면 트리거됩니다.
+# PR 리뷰 단계(main/master 대상)에서 직접 트리거됩니다.
+# CI Test(ci-test-pr.yml)와는 독립적으로 병렬 실행됩니다.
+#
+# 왜 CI Test 성공을 기다리지 않는가:
+# Preview 배포가 실패해도 실서비스(Production)에는 아무 영향이 없고,
+# 오히려 리뷰어가 빌드 문제를 조기에 발견하는 계기가 됩니다.
+# 반면 CI Test 완료를 기다리는 workflow_run 방식은 GitHub의
+# Required status check 시스템과 호환되지 않아(체크가 영구히
+# "Waiting for status to be reported" 상태로 멈추는 알려진 한계),
+# "merge 전에 preview 배포가 끝나있어야 한다"는 목적 자체를 달성할 수 없었습니다.
+# 그래서 이 워크플로우는 pull_request로 직접 트리거하고, 이 job을
+# Required status check로 등록해 "merge는 preview 배포 완료 후에만 가능"하게 만듭니다.
 on:
-  workflow_run:
-    workflows: ["CI Test PR"]
-    types:
-      - completed
+  pull_request:
+    branches:
+      - main
+      - master
 
 permissions:
   contents: read
   pull-requests: write # preview URL을 PR 코멘트로 게시하기 위함
 
 concurrency:
-  # 같은 PR에서 여러 번 push해도, 이전 preview 배포 작업은 취소하고 최신 것만 남깁니다.
-  group: cd-deploy-preview-${{ github.event.workflow_run.pull_requests[0].number }}
-  cancel-in-progress: true
+  group: cd-deploy-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
 
 jobs:
   deploy-preview:
     name: Deploy to Vercel (Preview)
     runs-on: ubuntu-latest
-    # "CI Test (PR)"는 이제 pull_request 트리거 전용 워크플로우이므로
-    # 성공 여부만 확인하면 됩니다. (이벤트 종류로 다시 필터링할 필요가 없어졌습니다)
-    if: github.event.workflow_run.conclusion == 'success'
 
     steps:
-      # PR의 최신 커밋(head_sha) 기준으로 체크아웃합니다.
-      - name: 코드 체크아웃 (PR head 기준)
+      - name: 코드 체크아웃
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Node.js 설정
         uses: actions/setup-node@v4
@@ -51,8 +55,12 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_USER_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+      # Preview 배포는 실패해도 job 전체를 실패시키지 않습니다(continue-on-error).
+      # "merge 전에 배포가 끝나있는지"만 확인하면 되고, "배포가 성공했는지"는
+      # merge를 막을 조건이 아니기 때문입니다. 실패해도 PR 코멘트로 실패 사실을 알려줍니다.
       - name: Vercel에 Preview 배포
         id: deploy
+        continue-on-error: true
         run: |
           URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$URL" >> "$GITHUB_OUTPUT"
@@ -63,17 +71,23 @@ jobs:
       # PR에 코멘트를 남깁니다. 같은 PR에 여러 번 push해도 코멘트를 새로 쌓지 않고,
       # 기존에 남긴 "Preview 배포" 코멘트를 찾아 내용만 갱신합니다(sticky comment).
       - name: PR에 Preview URL 코멘트 게시
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
-            const prNumber = context.payload.workflow_run.pull_requests[0].number;
             const marker = "<!-- vercel-preview-comment -->";
-            const body = `${marker}\n### ▲ Vercel Preview 배포 완료\n\n- **URL**: ${{ steps.deploy.outputs.url }}\n- **커밋**: \`${{ github.event.workflow_run.head_sha }}\``;
+            const deployOutcome = "${{ steps.deploy.outcome }}";
+            const url = "${{ steps.deploy.outputs.url }}";
+            const sha = context.payload.pull_request.head.sha;
+
+            const body = deployOutcome === "success"
+              ? `${marker}\n### ▲ Vercel Preview 배포 완료\n\n- **URL**: ${url}\n- **커밋**: \`${sha}\``
+              : `${marker}\n### ⚠️ Vercel Preview 배포 실패\n\n- **커밋**: \`${sha}\`\n- Actions 로그를 확인해주세요. (실서비스에는 영향 없습니다)`;
 
             const comments = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: prNumber,
+              issue_number: context.issue.number,
             });
 
             const existing = comments.data.find((c) => c.body.includes(marker));
@@ -89,7 +103,7 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: prNumber,
+                issue_number: context.issue.number,
                 body,
               });
             }
