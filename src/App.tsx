@@ -1,7 +1,7 @@
 function App() {
   return (
     <div className="">
-      <h1>still fixing github PR Pending dog shit</h1>
+      <h1>testing preview deploy</h1>
     </div>
   );
 }
