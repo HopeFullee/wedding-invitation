@@ -1,7 +1,10 @@
 function App() {
   return (
     <div className="">
-      <h1>testing preview deploy status check</h1>
+      <h1>
+        testing if preview deploys again after additional push to the same PR
+        (2)
+      </h1>
     </div>
   );
 }

@@ -23,6 +23,10 @@ permissions:
   pull-requests: write # preview URL을 PR 코멘트로 게시하기 위함
 
 concurrency:
+  # cancel-in-progress를 true로 두면, 취소 신호와 "성공" 보고 사이의 타이밍 레이스로
+  # Required status check가 뒤늦게 "cancelled"로 뒤집히는 문제가 발생할 수 있습니다.
+  # false로 두면 취소 대신 "대기열에 줄서서 순서대로 실행"하게 되어, 동시에 두 개의
+  # vercel deploy가 같은 브랜치를 두고 충돌하는 것도 막으면서 레이스 컨디션도 없앱니다.
   group: cd-deploy-preview-${{ github.event.pull_request.number }}
   cancel-in-progress: false
 
@@ -32,6 +36,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 새 preview를 배포하기 전에, 같은 PR(브랜치)의 이전 preview 배포를 먼저 정리합니다.
+      # (push할 때마다 쌓이는 오래된 preview를 남겨두지 않기 위함입니다.
+      #  cd-deploy-preview-cleanup.yml과 동일한 로직이며, "PR이 닫힐 때"가 아니라
+      #  "새로 배포하기 직전"이라는 시점만 다릅니다)
+      - name: 이전 Preview 배포 정리
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          echo "브랜치 '$BRANCH'의 기존 preview 배포를 조회합니다..."
+
+          RESPONSE=$(curl -s -X GET \
+            "https://api.vercel.com/v6/deployments?projectId=${VERCEL_PROJECT_ID}" \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}")
+
+          DEPLOYMENT_IDS=$(echo "$RESPONSE" | jq -r --arg BRANCH "$BRANCH" \
+            '.deployments[] | select(.meta.githubCommitRef == $BRANCH) | .uid')
+
+          if [ -z "$DEPLOYMENT_IDS" ]; then
+            echo "정리할 이전 preview 배포가 없습니다."
+            exit 0
+          fi
+
+          for ID in $DEPLOYMENT_IDS; do
+            echo "삭제 중: $ID"
+            curl -s -X DELETE \
+              "https://api.vercel.com/v13/deployments/${ID}" \
+              -H "Authorization: Bearer ${VERCEL_TOKEN}"
+            echo "삭제 완료: $ID"
+          done
+
       - name: 코드 체크아웃
         uses: actions/checkout@v4
 
@@ -70,8 +106,10 @@ jobs:
 
       # PR에 코멘트를 남깁니다. 같은 PR에 여러 번 push해도 코멘트를 새로 쌓지 않고,
       # 기존에 남긴 "Preview 배포" 코멘트를 찾아 내용만 갱신합니다(sticky comment).
+      # !cancelled()가 없으면, 새 push로 인해 이 실행 자체가 취소된 경우에도
+      # 이 스텝이 실행되어 "배포 실패"로 잘못 안내하게 됩니다.
       - name: PR에 Preview URL 코멘트 게시
-        if: always()
+        if: always() && !cancelled()
         uses: actions/github-script@v7
         with:
           script: |
