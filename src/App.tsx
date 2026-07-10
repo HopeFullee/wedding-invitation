@@ -1,10 +1,7 @@
 function App() {
   return (
     <div className="">
-      <h1>
-        testing if preview deploys again after additional push to the same PR
-        (2)
-      </h1>
+      <h1>testing previous preview deploy removal on "PR CLOSE"</h1>
     </div>
   );
 }
