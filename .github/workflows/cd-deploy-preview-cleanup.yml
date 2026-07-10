@@ -17,6 +17,11 @@ jobs:
     name: Remove Vercel Preview Deployments
     runs-on: ubuntu-latest
 
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      BRANCH: ${{ github.event.pull_request.head.ref }}
+
     steps:
       # Vercel REST API로 이 PR의 소스 브랜치(head_ref)에 해당하는 preview 배포 목록을 조회한 뒤,
       # 하나씩 삭제합니다. (vercel CLI 대신 REST API를 쓰는 이유: 배포 ID를 미리 알 필요 없이
@@ -27,10 +32,6 @@ jobs:
       # 만약 나중에 Team 플랜으로 전환하신다면, VERCEL_TEAM_ID 시크릿을 추가하고
       # 아래 두 curl 요청의 쿼리스트링에 &teamId=${VERCEL_TEAM_ID}를 다시 붙여주시면 됩니다.
       - name: 이 브랜치의 Preview 배포 삭제
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
           # 1. Vercel API 호출
           RESPONSE=$(curl -s -X GET \

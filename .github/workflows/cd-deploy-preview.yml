@@ -35,19 +35,20 @@ jobs:
     name: Deploy to Vercel (Preview)
     runs-on: ubuntu-latest
 
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      BRANCH: ${{ github.event.pull_request.head.ref }}
+      # [필수] Vercel이 인식하는 공식 Git 메타데이터 환경변수
+      VERCEL_GIT_COMMIT_REF: ${{ github.event.pull_request.head.ref }}
+      VERCEL_GIT_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+
     steps:
       # 새 preview를 배포하기 전에, 같은 PR(브랜치)의 이전 preview 배포를 먼저 정리합니다.
       # (push할 때마다 쌓이는 오래된 preview를 남겨두지 않기 위함입니다.
       #  cd-deploy-preview-cleanup.yml과 동일한 로직이며, "PR이 닫힐 때"가 아니라
       #  "새로 배포하기 직전"이라는 시점만 다릅니다)
       - name: 이전 Preview 배포 정리
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          BRANCH: ${{ github.event.pull_request.head.ref }}
-          # [필수] Vercel이 인식하는 공식 Git 메타데이터 환경변수
-          VERCEL_GIT_COMMIT_REF: ${{ github.event.pull_request.head.ref }}
-          VERCEL_GIT_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           echo "브랜치 '$BRANCH'의 기존 preview 배포를 조회합니다..."
 
