@@ -34,7 +34,7 @@ jobs:
         run: |
           # 1. Vercel API 호출
           RESPONSE=$(curl -s -X GET \
-          "https://api.vercel.com/v6/deployments?projectId=${VERCEL_PROJECT_ID}&target=preview&limit=100" \
+          "https://api.vercel.com/v6/deployments?projectId=${VERCEL_PROJECT_ID}&target=preview&branch=${BRANCH}&limit=100" \
           -H "Authorization: Bearer ${VERCEL_TOKEN}")
 
           # [디버깅용] 만약 Vercel 토큰 문제나 다른 에러가 있다면 여기서 잡힙니다.
