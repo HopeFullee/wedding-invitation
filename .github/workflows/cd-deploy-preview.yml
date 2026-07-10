@@ -45,11 +45,14 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           BRANCH: ${{ github.event.pull_request.head.ref }}
+          # [필수] Vercel이 인식하는 공식 Git 메타데이터 환경변수
+          VERCEL_GIT_COMMIT_REF: ${{ github.event.pull_request.head.ref }}
+          VERCEL_GIT_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           echo "브랜치 '$BRANCH'의 기존 preview 배포를 조회합니다..."
 
           RESPONSE=$(curl -s -X GET \
-            "https://api.vercel.com/v6/deployments?projectId=${VERCEL_PROJECT_ID}&target=preview&branch=${BRANCH}&limit=100" \
+            "https://api.vercel.com/v6/deployments?projectId=${VERCEL_PROJECT_ID}&target=preview&limit=100" \
             -H "Authorization: Bearer ${VERCEL_TOKEN}")
 
           DEPLOYMENT_IDS=$(echo "$RESPONSE" | jq -r '.deployments[].uid')
