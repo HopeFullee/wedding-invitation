@@ -40,9 +40,6 @@ jobs:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_USER_ID }}
       BRANCH: ${{ github.event.pull_request.head.ref }}
-      # [필수] Vercel이 인식하는 공식 Git 메타데이터 환경변수
-      VERCEL_GIT_COMMIT_REF: ${{ github.event.pull_request.head.ref }}
-      VERCEL_GIT_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
 
     steps:
       # 새 preview를 배포하기 전에, 같은 PR(브랜치)의 이전 preview 배포를 먼저 정리합니다.
