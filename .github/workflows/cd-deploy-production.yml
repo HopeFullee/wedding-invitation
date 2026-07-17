@@ -48,14 +48,12 @@ jobs:
       - name: Vercel 프로젝트 환경 정보 가져오기
         run: vercel pull --yes --environment=production --token=${VERCEL_TOKEN}
 
-      # [개선] 빌드 아티팩트 생성 시 공식 `--meta` 옵션으로 깃 브랜치 및 SHA 강제 주입
       - name: 프로덕션 빌드 (Vercel 빌드 아티팩트 생성)
         run: |
-          vercel build --prod --token=${VERCEL_TOKEN} \
-            --meta githubCommitRef="${VERCEL_GIT_COMMIT_REF}" \
-            --meta githubCommitSha="${VERCEL_GIT_COMMIT_SHA}"
+          vercel build --prod --token=${VERCEL_TOKEN}
 
-      # [개선] 배포 단계에서도 `--meta` 옵션을 사용하여 Vercel 대시보드 메타데이터 동기화
+      # 빌드 완료된 아티팩트를 Vercel 서버로 업로드(배포)할 때 메타데이터를 확실하게 주입합니다.
+      # Merge 브랜치 이름으로 Production 배포 브랜치 이름과 커밋 UID 적용하기 위함.
       - name: Vercel에 Production 배포
         id: deploy
         run: |
