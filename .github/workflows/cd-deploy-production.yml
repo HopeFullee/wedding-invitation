@@ -19,20 +19,23 @@ jobs:
   deploy-production:
     name: Deploy to Vercel (Production)
     runs-on: ubuntu-latest
-    # "CI Test (Merge)"는 이제 push(main/master) 트리거 전용 워크플로우이므로
-    # 성공 여부만 확인하면 됩니다. (이벤트 종류로 다시 필터링할 필요가 없어졌습니다)
+    # "CI Test (Merge)" 성공 여부 확인
     if: github.event.workflow_run.conclusion == 'success'
 
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_USER_ID }}
+      # Vercel CLI 및 대시보드 강제 매핑을 위한 메타데이터 환경 변수 정의
+      VERCEL_GIT_COMMIT_REF: ${{ github.event.workflow_run.head_branch }}
+      VERCEL_GIT_COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
 
     steps:
+      # [원칙 준수] 검증이 완료된 정확한 마일스톤 커밋(SHA) 기준으로 안전하게 체크아웃합니다.
       - name: 코드 체크아웃 (merge된 커밋 기준)
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+          ref: ${{ env.VERCEL_GIT_COMMIT_SHA }}
 
       - name: Node.js 설정
         uses: actions/setup-node@v4
@@ -42,23 +45,28 @@ jobs:
       - name: Vercel CLI 설치
         run: npm install --global vercel@latest
 
-      # VERCEL_ORG_ID는 Vercel CLI가 요구하는 환경변수명입니다.
-      # Hope님이 만들어두신 VERCEL_USER_ID 시크릿 값을 그대로 매핑해서 사용합니다.
       - name: Vercel 프로젝트 환경 정보 가져오기
         run: vercel pull --yes --environment=production --token=${VERCEL_TOKEN}
 
+      # [개선] 빌드 아티팩트 생성 시 공식 `--meta` 옵션으로 깃 브랜치 및 SHA 강제 주입
       - name: 프로덕션 빌드 (Vercel 빌드 아티팩트 생성)
         run: |
-          vercel build --prod --token=${VERCEL_TOKEN}
+          vercel build --prod --token=${VERCEL_TOKEN} \
+            --meta githubCommitRef="${VERCEL_GIT_COMMIT_REF}" \
+            --meta githubCommitSha="${VERCEL_GIT_COMMIT_SHA}"
 
+      # [개선] 배포 단계에서도 `--meta` 옵션을 사용하여 Vercel 대시보드 메타데이터 동기화
       - name: Vercel에 Production 배포
         id: deploy
         run: |
-          URL=$(vercel deploy --prebuilt --prod --token=${VERCEL_TOKEN})
+          URL=$(vercel deploy --prebuilt --prod --token=${VERCEL_TOKEN} \
+            --meta githubCommitRef="${VERCEL_GIT_COMMIT_REF}" \
+            --meta githubCommitSha="${VERCEL_GIT_COMMIT_SHA}")
           echo "url=$URL" >> "$GITHUB_OUTPUT"
 
       - name: 배포 결과 요약 (Actions Summary 탭에 표시)
         run: |
           echo "### 🚀 Production 배포 완료" >> "$GITHUB_STEP_SUMMARY"
-          echo "- 커밋: \`${{ github.event.workflow_run.head_sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 브랜치: \`${{ env.VERCEL_GIT_COMMIT_REF }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 커밋: \`${{ env.VERCEL_GIT_COMMIT_SHA }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- URL: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
