@@ -23,6 +23,14 @@ jobs:
     # 성공 여부만 확인하면 됩니다. (이벤트 종류로 다시 필터링할 필요가 없어졌습니다)
     if: github.event.workflow_run.conclusion == 'success'
 
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_USER_ID }}
+      # [핵심] workflow_run 이벤트에 맞는 올바른 컨텍스트 매핑
+      VERCEL_GIT_COMMIT_REF: ${{ github.event.workflow_run.head_branch }}
+      VERCEL_GIT_COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
+
     steps:
       # merge된 실제 커밋(head_sha) 기준으로 체크아웃합니다.
       - name: 코드 체크아웃 (merge된 커밋 기준)
@@ -41,28 +49,19 @@ jobs:
       # VERCEL_ORG_ID는 Vercel CLI가 요구하는 환경변수명입니다.
       # Hope님이 만들어두신 VERCEL_USER_ID 시크릿 값을 그대로 매핑해서 사용합니다.
       - name: Vercel 프로젝트 환경 정보 가져오기
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_USER_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: vercel pull --yes --environment=production --token=${VERCEL_TOKEN}
 
       - name: 프로덕션 빌드 (Vercel 빌드 아티팩트 생성)
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_USER_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: vercel build --prod --token=${VERCEL_TOKEN}
 
       - name: Vercel에 Production 배포
         id: deploy
         run: |
-          URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          URL=$(vercel deploy --prebuilt --prod --token=${VERCEL_TOKEN})
           echo "url=$URL" >> "$GITHUB_OUTPUT"
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_USER_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: 배포 결과 요약 (Actions Summary 탭에 표시)
         run: |
           echo "### 🚀 Production 배포 완료" >> "$GITHUB_STEP_SUMMARY"
-          echo "- 커밋: \`${{ github.event.workflow_run.head_sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 커밋: \`${VERCEL_GIT_COMMIT_SHA}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- URL: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
