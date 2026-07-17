@@ -10,7 +10,6 @@ on:
 # PR 코멘트 작성 등의 쓰기 권한은 ci-report.yml 쪽에서 별도로 가집니다.
 permissions:
   contents: read
-  actions: write
 
 jobs:
   test:
