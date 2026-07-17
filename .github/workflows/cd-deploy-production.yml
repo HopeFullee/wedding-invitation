@@ -38,6 +38,12 @@ jobs:
         with:
           ref: ${{ env.VERCEL_GIT_COMMIT_SHA }}
 
+      # [추가] Detached HEAD 상태인 러너에 강제로 로컬 main 브랜치를 만들어 줍니다.
+      - name: 로컬 Git 브랜치 강제 설정
+        run: |
+          git checkout -b main || git switch main
+          git branch
+
       - name: Node.js 설정
         uses: actions/setup-node@v4
         with:
@@ -52,7 +58,8 @@ jobs:
         run: vercel pull --yes --environment=production --token=${VERCEL_TOKEN}
 
       - name: 프로덕션 빌드 (Vercel 빌드 아티팩트 생성)
-        run: vercel build --prod --token=${VERCEL_TOKEN}
+        run: |
+          vercel build --prod --token=${VERCEL_TOKEN}
 
       - name: Vercel에 Production 배포
         id: deploy
