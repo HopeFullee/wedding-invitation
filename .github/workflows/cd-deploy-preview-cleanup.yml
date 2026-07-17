@@ -47,7 +47,7 @@ jobs:
           fi
 
           # 2. 배포 ID 추출
-          DEPLOYMENT_IDS=$(echo "$RESPONSE" | jq -r --arg branch "$BRANCH" '.deployments[] | select(.meta.githubBranch == $branch) | .uid')
+          DEPLOYMENT_IDS=$(echo "$RESPONSE" | jq -r '.deployments[].uid')
 
           if [ -z "$DEPLOYMENT_IDS" ]; then
             echo "삭제할 preview 배포가 없습니다. (Vercel 반환 데이터가 비어있음)"
