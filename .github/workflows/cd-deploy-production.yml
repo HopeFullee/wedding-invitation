@@ -27,22 +27,12 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_USER_ID }}
-      # [핵심] workflow_run 이벤트에 맞는 올바른 컨텍스트 매핑
-      VERCEL_GIT_COMMIT_REF: ${{ github.event.workflow_run.head_branch }}
-      VERCEL_GIT_COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
 
     steps:
-      # merge된 실제 커밋(head_sha) 기준으로 체크아웃합니다.
       - name: 코드 체크아웃 (merge된 커밋 기준)
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.VERCEL_GIT_COMMIT_SHA }}
-
-      # [추가] Detached HEAD 상태인 러너에 강제로 로컬 main 브랜치를 만들어 줍니다.
-      - name: 로컬 Git 브랜치 강제 설정
-        run: |
-          git checkout -b main || git switch main
-          git branch
+          ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: Node.js 설정
         uses: actions/setup-node@v4
@@ -70,5 +60,5 @@ jobs:
       - name: 배포 결과 요약 (Actions Summary 탭에 표시)
         run: |
           echo "### 🚀 Production 배포 완료" >> "$GITHUB_STEP_SUMMARY"
-          echo "- 커밋: \`${{ env.VERCEL_GIT_COMMIT_SHA }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 커밋: \`${{ github.event.workflow_run.head_sha }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- URL: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
