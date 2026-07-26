@@ -35,6 +35,7 @@ jobs:
       - name: 코드 체크아웃 (merge된 커밋 기준)
         uses: actions/checkout@v4
         with:
+          # 배포의 고유성/원자성 (Atomicity)을 위해 고유한 'SHA'를 기준으로 체크아웃함.
           ref: ${{ env.VERCEL_GIT_COMMIT_SHA }}
 
       - name: Node.js 설정
