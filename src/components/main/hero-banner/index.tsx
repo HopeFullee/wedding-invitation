@@ -10,7 +10,7 @@ import clsx from "clsx";
 export const HeroBanner = () => {
   return (
     <div className="bg-[url(/assets/gallery/gallery-1.webp)] bg-cover bg-center h-screen max-h-1000 p-20">
-      <div className="mt-[8%] flex-col-center">
+      <div className="mt-[6%] flex-col-center">
         <MotionContainer className="flex-col-center">
           <div className="flex-col-center gap-y-12">
             <motion.img
@@ -22,7 +22,7 @@ export const HeroBanner = () => {
 
             <motion.h1
               variants={BLUR_OUT_CONTAINER_VARIANT}
-              className="text-28 tracking-[15%] font-noto-kr text-[#83562A]"
+              className="text-24 tracking-[15%] font-noto-kr text-[#83562A]"
             >
               {[..."이소망 & 장소영"].map((v, idx) => {
                 return (
