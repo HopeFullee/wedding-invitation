@@ -62,7 +62,7 @@ export const FADE_IN_VARIANT: Variants = {
 
 export const BLUR_OUT_VARIANT: Variants = {
   hidden: {
-    y: 18,
+    y: 16,
     opacity: 0,
     filter: "blur(10px)",
   },
