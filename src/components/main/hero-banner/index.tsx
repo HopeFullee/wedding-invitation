@@ -24,9 +24,10 @@ export const HeroBanner = () => {
               variants={BLUR_OUT_CONTAINER_VARIANT}
               className="text-28 tracking-[15%] font-noto-kr text-[#83562A]"
             >
-              {[..."이소망 & 장소영"].map((v) => {
+              {[..."이소망 & 장소영"].map((v, idx) => {
                 return (
                   <motion.span
+                    key={idx}
                     variants={BLUR_OUT_VARIANT}
                     className={clsx(
                       "inline-block last:tracking-normal",
