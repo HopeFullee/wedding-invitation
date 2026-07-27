@@ -74,6 +74,7 @@ jobs:
         with:
           # 가상 머지 상태가 아닌 실제 소스 브랜치 코드를 타겟으로 잡습니다.
           # PR 커밋 브랜치 이름으로 Preview 배포 브랜치 이름에도 적용하기 위함.
+          # 또한 고유성이 필요한 production-deploy 와는 달리 'head_sha'가 필요하지 않음.
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Node.js 설정

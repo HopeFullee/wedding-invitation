@@ -1,0 +1,21 @@
+/* tw custom utilities */
+@utility flex-center {
+  @apply flex items-center justify-center;
+}
+
+@utility flex-between {
+  @apply flex items-center justify-between;
+}
+
+@utility flex-col-center {
+  @apply flex flex-col items-center justify-center;
+}
+
+@utility flex-col-between {
+  @apply flex flex-col items-center justify-between;
+}
+
+/* tw custom variants */
+@custom-variant under (& > *);
+
+@custom-variant all (& *);
