@@ -54,7 +54,7 @@ export const FADE_IN_VARIANT: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      duration: 0.8,
+      duration: 1,
       ease: "easeInOut",
     },
   },
@@ -62,7 +62,7 @@ export const FADE_IN_VARIANT: Variants = {
 
 export const BLUR_OUT_VARIANT: Variants = {
   hidden: {
-    y: 12,
+    y: 18,
     opacity: 0,
     filter: "blur(10px)",
   },

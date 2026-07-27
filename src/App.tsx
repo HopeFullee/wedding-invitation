@@ -1,10 +1,11 @@
 import { Layout } from "@/components/layout";
+import { HeroBanner } from "@/components/main";
 
 function App() {
   return (
-    <div className="">
+    <div className="bg-gray-200">
       <Layout>
-        <h1>testing production deploy</h1>
+        <HeroBanner />
       </Layout>
     </div>
   );
