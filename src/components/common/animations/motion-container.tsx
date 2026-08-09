@@ -17,7 +17,7 @@ export const MotionContainer = ({
 }: Props) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mainControl = useAnimation();
-  const isInView = useInView(containerRef, { once: true }); // 한번만 실행
+  const isInView = useInView(containerRef, { margin: "-15%", once: true }); // 한번만 실행
 
   const CONTAINER_VARIANT = {
     hidden: {},

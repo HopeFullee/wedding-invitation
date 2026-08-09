@@ -10,7 +10,7 @@ import clsx from "clsx";
 export const HeroBanner = () => {
   return (
     <div className="bg-[url(/assets/gallery/gallery-1.webp)] bg-cover bg-center h-screen max-h-1000 p-20">
-      <div className="mt-[6%] flex-col-center">
+      <div className="mt-20 flex-col-center">
         <MotionContainer className="flex-col-center">
           <div className="flex-col-center gap-y-12">
             <motion.img
@@ -19,7 +19,6 @@ export const HeroBanner = () => {
               className="w-[65%]"
               alt="invitation"
             />
-
             <motion.h1
               variants={BLUR_OUT_CONTAINER_VARIANT}
               className="text-24 tracking-[15%] font-noto-kr text-[#83562A]"
