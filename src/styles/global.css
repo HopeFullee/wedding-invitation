@@ -1,4 +1,9 @@
 @config "../../tailwind.config.js";
 @import "tailwindcss";
 @import "./fonts.css";
+@import "./colors.css";
 @import "./custom-tailwind.css";
+
+body {
+  @apply font-noto-kr text-[#222222];
+}
