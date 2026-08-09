@@ -17,7 +17,7 @@ export const MotionContainer = ({
 }: Props) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mainControl = useAnimation();
-  const isInView = useInView(containerRef, { once: true }); // 한번만 실행
+  const isInView = useInView(containerRef, { margin: "-15%", once: true }); // 한번만 실행
 
   const CONTAINER_VARIANT = {
     hidden: {},
@@ -55,6 +55,21 @@ export const FADE_IN_VARIANT: Variants = {
     opacity: 1,
     transition: {
       duration: 1,
+      ease: "easeInOut",
+    },
+  },
+};
+
+export const FADE_IN_UP_VARIANT: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
       ease: "easeInOut",
     },
   },
