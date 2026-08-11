@@ -47,7 +47,7 @@ export const Calendar = () => {
         variants={FADE_IN_UP_VARIANT}
         className="mt-8 font-semibold tracking-wider text-primary-500 text-18"
       >
-        11월 15일 <span className="text-rose-400">(일)</span> 오후 2시
+        11월 15일 <span className="text-rose-400">(일)</span> 오후 1시
       </motion.p>
     </div>
   );
