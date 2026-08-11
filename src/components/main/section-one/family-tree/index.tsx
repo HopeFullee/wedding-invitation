@@ -32,13 +32,13 @@ export const FamilyTree = () => {
         <div className="gap-24 flex-col-center">
           <motion.div
             variants={FADE_IN_UP_VARIANT}
-            className="space-y-4 text-center"
+            className="space-y-8 text-center"
           >
             <p className="tracking-[8px] text-primary-500 text-12 -mr-8">
               신랑
             </p>
             <p className="tracking-wider text-14">전향기의 아들</p>
-            <p className="text-18 text-primary-500 tracking-[8px] -mr-8">
+            <p className="font-semibold text-18 text-primary-500 tracking-[8px] -mr-8">
               이소망
             </p>
           </motion.div>
@@ -52,13 +52,13 @@ export const FamilyTree = () => {
 
           <motion.div
             variants={FADE_IN_UP_VARIANT}
-            className="space-y-4 text-center"
+            className="space-y-8 text-center"
           >
             <p className="tracking-[8px] text-primary-500 text-12 -mr-8">
               신부
             </p>
             <p className="tracking-wider text-14">장세봉 · 김안미의 딸</p>
-            <p className="text-18 text-primary-500 tracking-[8px] -mr-8">
+            <p className="font-semibold text-18 text-primary-500 tracking-[8px] -mr-8">
               장소영
             </p>
           </motion.div>
