@@ -7,12 +7,15 @@ import {
 export const FamilyTree = () => {
   return (
     <MotionContainer staggerChildren={0.4}>
-      <div className="space-y-40 mt-50 flex-col-center">
+      <div className="mt-40 space-y-40 flex-col-center">
         <motion.div
           variants={FADE_IN_UP_VARIANT}
           className="w-full gap-8 flex-center"
         >
-          <span className="block w-[20%] h-1 bg-primary-700" />
+          {/* <span className="block w-[20%] h-1 bg-primary-700" /> */}
+          <img src="/assets/icons/star.svg" alt="star" className="size-2" />
+          <img src="/assets/icons/star.svg" alt="star" className="size-2" />
+          <img src="/assets/icons/star.svg" alt="star" className="size-4" />
           <img src="/assets/icons/star.svg" alt="star" className="size-8" />
           <img src="/assets/icons/star.svg" alt="star" className="size-12" />
           <img src="/assets/icons/star.svg" alt="star" className="size-16" />
@@ -20,7 +23,10 @@ export const FamilyTree = () => {
           <img src="/assets/icons/star.svg" alt="star" className="size-16" />
           <img src="/assets/icons/star.svg" alt="star" className="size-12" />
           <img src="/assets/icons/star.svg" alt="star" className="size-8" />
-          <span className="block w-[20%] h-1 bg-primary-700" />
+          <img src="/assets/icons/star.svg" alt="star" className="size-4" />
+          <img src="/assets/icons/star.svg" alt="star" className="size-2" />
+          <img src="/assets/icons/star.svg" alt="star" className="size-2" />
+          {/* <span className="block w-[20%] h-1 bg-primary-700" /> */}
         </motion.div>
 
         <div className="gap-24 flex-col-center">
