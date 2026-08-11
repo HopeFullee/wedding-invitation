@@ -20,6 +20,16 @@ module.exports = {
       padding: px0_100,
       margin: px0_100,
       spacing: px0_300,
+      // 기존 h-screen (100vh)을 CSS 변수 기반으로 덮어씀
+      height: {
+        screen: "calc(var(--vh,1vh)*100)",
+      },
+      minHeight: {
+        screen: "calc(var(--vh,1vh)*100)",
+      },
+      maxHeight: {
+        screen: "calc(var(--vh,1vh)*100)",
+      },
     },
     screens: {
       sm: "480px",
