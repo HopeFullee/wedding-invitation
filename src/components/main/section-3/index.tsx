@@ -1,10 +1,10 @@
 import { MotionContainer } from "@/components/common/animations/motion-container";
 import { CommonHeading } from "@/components/common/heading";
-import { Calendar } from "@/components/main/section-two/calendar";
+import { Calendar } from "@/components/main/section-3/calendar";
 
-export const SectionTwo = () => {
+export const SectionThree = () => {
   return (
-    <section className="min-h-screen px-20 bg-white py-60">
+    <section className="px-20 bg-white py-60">
       <MotionContainer staggerChildren={0.5}>
         <CommonHeading main="예식일" sub="— WEDDING DATE —" />
         <Calendar />

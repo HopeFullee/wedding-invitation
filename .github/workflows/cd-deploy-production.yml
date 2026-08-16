@@ -49,6 +49,12 @@ jobs:
       - name: Vercel 프로젝트 환경 정보 가져오기
         run: vercel pull --yes --environment=production --token=${VERCEL_TOKEN}
 
+      - name: .env.production 파일 생성
+        run: |
+          echo "VITE_NAVER_CLOUD_CLIENT_ID=${{ vars.VITE_NAVER_CLOUD_CLIENT_ID }}" >> .env.production
+          echo "VITE_POSTHOG_PROJECT_TOKEN=${{ vars.VITE_POSTHOG_PROJECT_TOKEN }}" >> .env.production
+          echo "VITE_POSTHOG_HOST=${{ vars.VITE_POSTHOG_HOST }}" >> .env.production
+
       - name: 프로덕션 빌드 (Vercel 빌드 아티팩트 생성)
         run: |
           vercel build --prod --token=${VERCEL_TOKEN}
