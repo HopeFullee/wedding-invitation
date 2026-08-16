@@ -3,14 +3,17 @@ import { FADE_IN_UP_VARIANT } from "@/components/common/animations/motion-contai
 
 export const Quote = () => {
   return (
-    <motion.div variants={FADE_IN_UP_VARIANT} className="space-y-12 mt-50">
+    <motion.div
+      variants={FADE_IN_UP_VARIANT}
+      className="gap-12 mt-50 flex-col-center"
+    >
       <div className="text-center text-14 text-primary-500">
         <p>- 영화 &lt;어바웃 타임&gt; 중 -</p>
       </div>
-      <div className="relative gap-4 mx-auto text-center min-h-92">
+      <div className="relative text-center">
         <img
           src="/assets/icons/quote.svg"
-          className="absolute left-10 size-24"
+          className="absolute -left-16 -top-2 size-28"
           alt="quote"
         />
         <p className="space-y-12 text-14 under:block text-primary-500">
@@ -20,7 +23,7 @@ export const Quote = () => {
         </p>
         <img
           src="/assets/icons/quote.svg"
-          className="absolute rotate-180 right-10 size-24 bottom-4"
+          className="absolute rotate-180 -bottom-2 -right-16 size-28"
           alt="quote"
         />
       </div>
