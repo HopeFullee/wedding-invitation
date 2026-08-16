@@ -1,6 +1,6 @@
 import { MotionContainer } from "@/components/common/animations/motion-container";
 import { CommonHeading } from "@/components/common/heading";
-import { Calendar } from "@/components/main/section-three/calendar";
+import { Calendar } from "@/components/main/section-3/calendar";
 
 export const SectionThree = () => {
   return (

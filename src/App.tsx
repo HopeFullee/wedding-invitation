@@ -1,5 +1,10 @@
 import { Layout } from "@/components/layout";
-import { HeroBanner, SectionOne, SectionThree } from "@/components/main";
+import {
+  HeroBanner,
+  SectionOne,
+  SectionThree,
+  SectionFour,
+} from "@/components/main";
 
 function App() {
   return (
@@ -8,6 +13,7 @@ function App() {
         <HeroBanner />
         <SectionOne />
         <SectionThree />
+        <SectionFour />
       </Layout>
     </div>
   );

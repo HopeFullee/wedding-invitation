@@ -1,8 +1,8 @@
 import { MotionContainer } from "@/components/common/animations/motion-container";
 import { CommonHeading } from "@/components/common/heading";
-import { Quote } from "@/components/main/section-one/quote";
-import { Message } from "@/components/main/section-one/message";
-import { FamilyTree } from "@/components/main/section-one/family-tree";
+import { Quote } from "@/components/main/section-1/quote";
+import { Message } from "@/components/main/section-1/message";
+import { FamilyTree } from "@/components/main/section-1/family-tree";
 
 export const SectionOne = () => {
   return (
