@@ -19,6 +19,7 @@
     "posthog-js": "^1.396.3",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-naver-maps": "^0.2.2",
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
