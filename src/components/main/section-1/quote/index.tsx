@@ -7,10 +7,10 @@ export const Quote = () => {
       <div className="text-center text-14 text-primary-500">
         <p>- 영화 &lt;어바웃 타임&gt; 중 -</p>
       </div>
-      <div className="gap-8 mx-auto text-center flex-center min-h-92">
+      <div className="relative gap-4 mx-auto text-center min-h-92">
         <img
           src="/assets/icons/quote.svg"
-          className="mb-auto size-28"
+          className="absolute left-10 size-24"
           alt="quote"
         />
         <p className="space-y-12 text-14 under:block text-primary-500">
@@ -20,7 +20,7 @@ export const Quote = () => {
         </p>
         <img
           src="/assets/icons/quote.svg"
-          className="mt-auto rotate-180 size-28"
+          className="absolute rotate-180 right-10 size-24 bottom-4"
           alt="quote"
         />
       </div>
