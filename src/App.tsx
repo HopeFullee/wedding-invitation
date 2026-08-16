@@ -1,5 +1,5 @@
 import { Layout } from "@/components/layout";
-import { HeroBanner, SectionOne, SectionTwo } from "@/components/main";
+import { HeroBanner, SectionOne, SectionThree } from "@/components/main";
 
 function App() {
   return (
@@ -7,7 +7,7 @@ function App() {
       <Layout>
         <HeroBanner />
         <SectionOne />
-        <SectionTwo />
+        <SectionThree />
       </Layout>
     </div>
   );
