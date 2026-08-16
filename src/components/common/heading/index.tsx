@@ -15,7 +15,7 @@ export const CommonHeading = ({ main, sub }: CommonHeadingType) => {
     <div className="mx-auto leading-none text-center flex-col-center w-fit gap-y-14">
       <motion.p
         variants={BLUR_OUT_CONTAINER_VARIANT}
-        className="text-22 font-light tracking-[10%] font-playfair text-primary-500"
+        className="text-22 font-light tracking-[4px] font-playfair text-primary-500"
       >
         {[...sub].map((v, idx) => {
           return (
@@ -34,7 +34,7 @@ export const CommonHeading = ({ main, sub }: CommonHeadingType) => {
       </motion.p>
       <motion.h3
         variants={BLUR_OUT_CONTAINER_VARIANT}
-        className="text-24 tracking-[20%] font-noto-kr font-normal text-primary-500"
+        className="text-24 tracking-[2px] font-noto-kr font-normal text-primary-500"
       >
         {[...main].map((v, idx) => {
           return (
