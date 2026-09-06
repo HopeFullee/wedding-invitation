@@ -88,11 +88,9 @@ jobs:
       - name: Vercel 프로젝트 환경 정보 가져오기
         run: vercel pull --yes --environment=preview --token=${VERCEL_TOKEN}
 
-      - name: .env.preview 파일 생성
-        run: |
-          echo "VITE_NAVER_CLOUD_CLIENT_ID=${{ vars.VITE_NAVER_CLOUD_CLIENT_ID }}" >> .env.preview
-
       - name: 빌드 (Vercel 빌드 아티팩트 생성)
+        env:
+          VITE_NAVER_CLOUD_CLIENT_ID: ${{ vars.VITE_NAVER_CLOUD_CLIENT_ID }}
         run: vercel build --token=${VERCEL_TOKEN}
 
       # Preview 배포는 실패해도 job 전체를 실패시키지 않습니다(continue-on-error).
