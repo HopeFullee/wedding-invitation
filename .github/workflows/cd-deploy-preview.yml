@@ -88,22 +88,35 @@ jobs:
       - name: Vercel 프로젝트 환경 정보 가져오기
         run: vercel pull --yes --environment=preview --token=${VERCEL_TOKEN}
 
-      - name: .env.preview 파일 생성
-        run: |
-          echo "VITE_NAVER_CLOUD_CLIENT_ID=${{ vars.VITE_NAVER_CLOUD_CLIENT_ID }}" >> .env.preview
-
       - name: 빌드 (Vercel 빌드 아티팩트 생성)
+        env:
+          VITE_NAVER_CLOUD_CLIENT_ID: ${{ vars.VITE_NAVER_CLOUD_CLIENT_ID }}
         run: vercel build --token=${VERCEL_TOKEN}
 
       # Preview 배포는 실패해도 job 전체를 실패시키지 않습니다(continue-on-error).
       # "merge 전에 배포가 끝나있는지"만 확인하면 되고, "배포가 성공했는지"는
       # merge를 막을 조건이 아니기 때문입니다. 실패해도 PR 코멘트로 실패 사실을 알려줍니다.
-      - name: Vercel에 Preview 배포
+      - name: Vercel에 Preview 배포 및 Custom Domain Alias 설정
         id: deploy
         continue-on-error: true
         run: |
-          URL=$(vercel deploy --prebuilt --token=${VERCEL_TOKEN})
-          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          # 1. Vercel CLI로 사전 빌드된 아티팩트 배포
+          DEPLOYMENT_URL=$(vercel deploy --prebuilt --token=${VERCEL_TOKEN})
+
+          # 2. PR 브랜치 이름을 안전한 DNS 서브도메인 문자열로 변환 (소문자화 및 특수문자 제거)
+          # 예: feature/login-page -> feature-login-page
+          SAFE_BRANCH=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/^-//;s/-$//')
+
+          # 3. 고유 커스텀 도메인 Alias 주소 생성 (PR번호 + 브랜치명 조합으로 충돌 완전 방지)
+          ALIAS_DOMAIN="pr-${{ github.event.pull_request.number }}-${SAFE_BRANCH}.preview.somang-soyoung.love"
+
+          echo "Alias 도메인을 바인딩합니다: $ALIAS_DOMAIN"
+
+          # 4. 생성된 Vercel 배포에 커스텀 도메인 Alias 바인딩
+          vercel alias set "$DEPLOYMENT_URL" "$ALIAS_DOMAIN" --token=${VERCEL_TOKEN}
+
+          # 5. PR 코멘트용 최종 URL 출력
+          echo "url=https://${ALIAS_DOMAIN}" >> "$GITHUB_OUTPUT"
 
       # PR에 코멘트를 남깁니다. 같은 PR에 여러 번 push해도 코멘트를 새로 쌓지 않고,
       # 기존에 남긴 "Preview 배포" 코멘트를 찾아 내용만 갱신합니다(sticky comment).
