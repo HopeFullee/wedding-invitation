@@ -1,0 +1,38 @@
+.marker-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #0056cc;
+  border-radius: 999px;
+  padding: 4px 12px 4px 4px;
+}
+
+.marker-container::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 10px;
+  border-width: 8px 6px 0;
+  border-style: solid;
+  border-color: #0056cc transparent;
+  display: block;
+  width: 0;
+  z-index: 1;
+}
+
+.marker-icon {
+  border-radius: 999px;
+  background-color: #fff;
+
+  img {
+    width: 20px;
+  }
+}
+
+.address-name {
+  font-size: 14px;
+  color: white;
+  font-family: sans-serif;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
