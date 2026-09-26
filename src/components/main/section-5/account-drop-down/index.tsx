@@ -16,7 +16,7 @@ export const AccountDropDown = ({ summary, accountList }: Props) => {
     <motion.details
       variants={FADE_IN_UP_VARIANT}
       name="accounts"
-      className="rounded-md group border-1 border-primary-300 bg-primary-50"
+      className="bg-white rounded-md shadow-md group border-1 border-primary-300"
     >
       <summary className="p-16 font-semibold cursor-pointer select-none text-15 text-primary-500 flex-between">
         {summary}
@@ -46,7 +46,7 @@ const AccountItem = ({ name, bank, account }: Props["accountList"][number]) => {
       </div>
       <button
         type="button"
-        className="gap-5 px-12 py-4 font-semibold rounded-full cursor-pointer select-none text-14 flex-center text-primary-500 bg-primary-300/60"
+        className="gap-5 px-12 py-4 font-semibold rounded-full cursor-pointer select-none text-14 flex-center text-primary-500 bg-primary-100"
         onClick={() => navigator.clipboard.writeText(clipboardTemplate)}
       >
         <svg width={13} height={13} className="font-light size-13">

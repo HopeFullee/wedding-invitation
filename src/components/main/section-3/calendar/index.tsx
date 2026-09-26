@@ -13,7 +13,7 @@ export const Calendar = () => {
       </motion.p>
       <motion.div
         variants={FADE_IN_UP_VARIANT}
-        className="grid grid-cols-7 text-center gap-y-20 gap-x-14 text-14"
+        className="grid grid-cols-7 text-center select-none gap-y-20 gap-x-14 text-14"
       >
         {DAYS_OF_WEEK.map((day) => (
           <span
