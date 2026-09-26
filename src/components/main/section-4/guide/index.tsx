@@ -4,7 +4,7 @@ import { FADE_IN_UP_VARIANT } from "@/components/common/animations/motion-contai
 export const LocationGuide = () => {
   return (
     <motion.div variants={FADE_IN_UP_VARIANT} className="px-4">
-      <ul className="space-y-28">
+      <ul className="font-medium space-y-28">
         <li className="space-y-8">
           <p className="px-4 pb-4 font-semibold border-b-1 border-primary-300">
             교통편 안내

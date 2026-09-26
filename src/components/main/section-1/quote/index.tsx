@@ -7,10 +7,10 @@ export const Quote = () => {
       variants={FADE_IN_UP_VARIANT}
       className="gap-12 mt-50 flex-col-center"
     >
-      <div className="text-center text-14 text-primary-500">
+      <div className="font-semibold text-center text-14 text-primary-500">
         <p>- 영화 &lt;어바웃 타임&gt; 중 -</p>
       </div>
-      <div className="relative text-center">
+      <div className="relative font-medium text-center">
         <img
           src="/assets/icons/quote.svg"
           className="absolute -left-16 -top-2 size-28"

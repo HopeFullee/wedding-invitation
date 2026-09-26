@@ -4,6 +4,7 @@ import {
   SectionOne,
   SectionThree,
   SectionFour,
+  SectionFive,
 } from "@/components/main";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <SectionOne />
         <SectionThree />
         <SectionFour />
+        <SectionFive />
       </Layout>
     </div>
   );

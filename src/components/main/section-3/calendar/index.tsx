@@ -4,7 +4,7 @@ import { FADE_IN_UP_VARIANT } from "@/components/common/animations/motion-contai
 
 export const Calendar = () => {
   return (
-    <div className="gap-20 mt-50 flex-col-center">
+    <div className="gap-20 font-medium flex-col-center">
       <motion.p
         variants={FADE_IN_UP_VARIANT}
         className="tracking-wider text-primary-500 text-18"

@@ -32,9 +32,9 @@ export const CommonHeading = ({ main, sub }: CommonHeadingType) => {
           );
         })}
       </motion.p>
-      <motion.h3
+      <motion.h2
         variants={BLUR_OUT_CONTAINER_VARIANT}
-        className="text-24 tracking-[2px] font-noto-kr font-normal text-primary-500"
+        className="text-24 tracking-[2px] font-noto-kr text-primary-500"
       >
         {[...main].map((v, idx) => {
           return (
@@ -50,7 +50,7 @@ export const CommonHeading = ({ main, sub }: CommonHeadingType) => {
             </motion.span>
           );
         })}
-      </motion.h3>
+      </motion.h2>
     </div>
   );
 };

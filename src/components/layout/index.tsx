@@ -8,7 +8,7 @@ export const Layout = ({ children }: Props) => {
   document.documentElement.style.setProperty("--vh", `${vh}px`);
 
   return (
-    <main className="w-full mx-auto bg-[#F6EEE5] min-h-screen max-w-480">
+    <main className="w-full min-h-screen mx-auto bg-primary-50 max-w-480">
       {children}
     </main>
   );

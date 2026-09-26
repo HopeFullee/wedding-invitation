@@ -1,0 +1,25 @@
+/* details & summary dropdown transition animations */
+details {
+  interpolate-size: allow-keywords;
+
+  &::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 300ms ease,
+      content-visibility 300ms ease allow-discrete;
+  }
+
+  &[open]::details-content {
+    block-size: auto;
+  }
+
+  /* Removes the arrow in Firefox, Chrome, and Edge */
+  & > summary {
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+}
