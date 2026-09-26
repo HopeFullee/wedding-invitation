@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { FADE_IN_UP_VARIANT } from "@/components/common/animations/motion-container";
 
-export const Address = () => {
+export const LocationAddress = () => {
   return (
-    <motion.address variants={FADE_IN_UP_VARIANT} className="py-12">
+    <motion.address variants={FADE_IN_UP_VARIANT}>
       <ul className="gap-8 text-center flex-col-center text-primary-500">
         <li className="font-semibold leading-loose text-18">
           비즈컨벤션 웨딩홀

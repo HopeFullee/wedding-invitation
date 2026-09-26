@@ -8,7 +8,7 @@ export const LocationMap = ({ lat, lng }: typeof DESTINATION_INFO) => {
   return (
     <motion.div
       variants={FADE_IN_UP_VARIANT}
-      className="w-full overflow-hidden rounded-lg h-260"
+      className="w-full overflow-hidden rounded-lg h-260 border-1 border-primary-300"
     >
       <NavermapsProvider ncpKeyId={import.meta.env.VITE_NAVER_CLOUD_CLIENT_ID}>
         <Container className="size-full">
