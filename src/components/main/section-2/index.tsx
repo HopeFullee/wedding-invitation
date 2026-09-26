@@ -43,7 +43,7 @@ export const SectionTwo = () => {
           return (
             <SwiperSlide
               key={idx}
-              className="overflow-hidden rounded-sm drop-shadow-md"
+              className="overflow-hidden rounded-sm shadow-center"
               onClick={() => handleSlideClick(idx)}
             >
               <img
@@ -57,13 +57,12 @@ export const SectionTwo = () => {
       </Swiper>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex-center">
           <div
             className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
           />
 
-          {/* 모달 콘텐츠 박스 */}
           <div className="relative z-10 w-full select-none max-w-480">
             <button
               type="button"

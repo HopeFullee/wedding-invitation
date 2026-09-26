@@ -63,7 +63,7 @@ const MapLink = ({ provider, address, lat, lng }: MapLinkProps) => {
       target="_blank"
       href={formatHref({ provider })}
       className={clsx(
-        "w-full gap-6 h-40 rounded-lg cursor-pointer flex-center font-poppins text-14",
+        "w-full gap-6 h-40 rounded-md cursor-pointer flex-center font-poppins text-14 shadow-sm",
         provider === "NAVER" && "bg-[#03C75A]",
         provider === "T-MAP" && "bg-[#2AD1BA]",
         provider === "KAKAO" && "bg-[#FAE100]",

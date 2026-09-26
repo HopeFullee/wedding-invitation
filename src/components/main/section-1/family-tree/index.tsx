@@ -10,23 +10,9 @@ export const FamilyTree = () => {
       <div className="mt-40 space-y-40 flex-col-center">
         <motion.div
           variants={FADE_IN_UP_VARIANT}
-          className="w-full gap-8 flex-center"
+          className="w-full h-20 gap-8 flex-center"
         >
-          {/* <span className="block w-[20%] h-1 bg-primary-700" /> */}
-          <img src="/assets/icons/star.svg" alt="star" className="size-2" />
-          <img src="/assets/icons/star.svg" alt="star" className="size-2" />
-          <img src="/assets/icons/star.svg" alt="star" className="size-4" />
-          <img src="/assets/icons/star.svg" alt="star" className="size-8" />
-          <img src="/assets/icons/star.svg" alt="star" className="size-12" />
-          <img src="/assets/icons/star.svg" alt="star" className="size-16" />
-          <img src="/assets/icons/star.svg" alt="star" className="size-20" />
-          <img src="/assets/icons/star.svg" alt="star" className="size-16" />
-          <img src="/assets/icons/star.svg" alt="star" className="size-12" />
-          <img src="/assets/icons/star.svg" alt="star" className="size-8" />
-          <img src="/assets/icons/star.svg" alt="star" className="size-4" />
-          <img src="/assets/icons/star.svg" alt="star" className="size-2" />
-          <img src="/assets/icons/star.svg" alt="star" className="size-2" />
-          {/* <span className="block w-[20%] h-1 bg-primary-700" /> */}
+          <img src="assets/icons/star-line.svg" className="h-full" alt="" />
         </motion.div>
 
         <div className="gap-24 flex-col-center">
@@ -46,7 +32,7 @@ export const FamilyTree = () => {
           <motion.img
             variants={FADE_IN_UP_VARIANT}
             src="/assets/icons/flower.svg"
-            alt="flower"
+            alt=""
             className="size-16"
           />
 

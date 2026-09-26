@@ -4,7 +4,7 @@ import { AccountDropDown } from "@/components/main/section-5/account-drop-down";
 
 export const SectionFive = () => {
   return (
-    <section className="px-20 bg-white py-60">
+    <section className="px-20 py-60">
       <MotionContainer
         staggerChildren={0.5}
         className="mx-auto space-y-60 max-w-360"

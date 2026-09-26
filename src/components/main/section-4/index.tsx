@@ -7,7 +7,7 @@ import { LocationGuide } from "@/components/main/section-4/guide";
 
 export const SectionFour = () => {
   return (
-    <section className="px-20 py-60">
+    <section className="px-20 bg-white py-60">
       <MotionContainer
         staggerChildren={0.5}
         className="mx-auto space-y-50 max-w-360"
