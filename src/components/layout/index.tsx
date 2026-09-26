@@ -1,3 +1,5 @@
+import { Footer } from "@/components/layout/footer";
+
 interface Props {
   children: React.ReactNode;
 }
@@ -10,6 +12,7 @@ export const Layout = ({ children }: Props) => {
   return (
     <main className="w-full min-h-screen mx-auto bg-primary-50 max-w-480">
       {children}
+      <Footer />
     </main>
   );
 };
