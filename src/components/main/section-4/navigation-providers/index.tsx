@@ -7,7 +7,7 @@ export const NavigationProviders = (props: typeof DESTINATION_INFO) => {
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   return (
-    <motion.nav variants={FADE_IN_UP_VARIANT} className="w-full mt-12">
+    <motion.nav variants={FADE_IN_UP_VARIANT} className="w-full">
       <ul className="gap-12 flex-center under:w-full">
         <li>
           <MapLink provider="NAVER" {...props} />

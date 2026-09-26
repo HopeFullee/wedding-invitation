@@ -2,13 +2,15 @@ import { MotionContainer } from "@/components/common/animations/motion-container
 import { CommonHeading } from "@/components/common/heading";
 import { LocationMap } from "@/components/main/section-4/location-map";
 import { NavigationProviders } from "@/components/main/section-4/navigation-providers";
+import { Address } from "@/components/main/section-4/address";
 
 export const SectionFour = () => {
   return (
-    <section className="min-h-screen px-20 py-60">
-      <MotionContainer staggerChildren={0.5}>
+    <section className="px-20 py-60">
+      <MotionContainer staggerChildren={0.5} className="mx-auto max-w-360">
         <CommonHeading main="오시는길" sub="— LOCATION —" />
-        <div className="mx-auto max-w-360">
+        <div className="gap-12 mt-32 flex-col-center">
+          <Address />
           <LocationMap {...DESTINATION_INFO} />
           <NavigationProviders {...DESTINATION_INFO} />
         </div>
