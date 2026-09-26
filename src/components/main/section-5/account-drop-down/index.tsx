@@ -46,7 +46,7 @@ const AccountItem = ({ name, bank, account }: Props["accountList"][number]) => {
       </div>
       <button
         type="button"
-        className="gap-5 px-12 py-5 font-semibold rounded-full cursor-pointer select-none text-14 flex-center text-primary-500 bg-primary-300/60"
+        className="gap-5 px-12 py-4 font-semibold rounded-full cursor-pointer select-none text-14 flex-center text-primary-500 bg-primary-300/60"
         onClick={() => navigator.clipboard.writeText(clipboardTemplate)}
       >
         <svg width={13} height={13} className="font-light size-13">

@@ -12,10 +12,10 @@ export type CommonHeadingType = {
 
 export const CommonHeading = ({ main, sub }: CommonHeadingType) => {
   return (
-    <div className="mx-auto leading-none text-center flex-col-center w-fit gap-y-14">
+    <div className="mx-auto leading-none text-center select-none flex-col-center w-fit gap-y-16">
       <motion.p
         variants={BLUR_OUT_CONTAINER_VARIANT}
-        className="text-22 font-light tracking-[4px] font-playfair text-primary-500"
+        className="font-light tracking-widest text-22 font-playfair text-primary-500"
       >
         {[...sub].map((v, idx) => {
           return (
@@ -34,7 +34,7 @@ export const CommonHeading = ({ main, sub }: CommonHeadingType) => {
       </motion.p>
       <motion.h2
         variants={BLUR_OUT_CONTAINER_VARIANT}
-        className="text-24 tracking-[2px] font-noto-kr text-primary-500"
+        className="tracking-wider text-24 font-noto-kr text-primary-500"
       >
         {[...main].map((v, idx) => {
           return (

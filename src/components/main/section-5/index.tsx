@@ -31,7 +31,7 @@ const ACCOUNT_LIST = {
     { name: "전향기", bank: "국민은행", account: "381802-04-146157" },
   ],
   bride: [
-    { name: "장소영", bank: "신한은행", account: "1234-1234" },
+    { name: "장소영", bank: "신한은행", account: "110-507-745655" },
     { name: "장세봉", bank: "농협은행", account: "352-0043-9673-53" },
     { name: "김안미", bank: "농협은행", account: "302-0008-2609-21" },
   ],
