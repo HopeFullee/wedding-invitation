@@ -5,7 +5,7 @@ import { Calendar } from "@/components/main/section-3/calendar";
 export const SectionThree = () => {
   return (
     <section className="px-20 bg-white py-60">
-      <MotionContainer staggerChildren={0.5}>
+      <MotionContainer staggerChildren={0.5} className="space-y-50">
         <CommonHeading main="예식일" sub="— WEDDING DATE —" />
         <Calendar />
       </MotionContainer>

@@ -4,6 +4,7 @@ import {
   SectionOne,
   SectionThree,
   SectionFour,
+  SectionFive,
 } from "@/components/main";
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
         <SectionOne />
         <SectionThree />
         <SectionFour />
-        <p>testing Preview Deploy with Wildcard URL</p>
+        <SectionFive />
       </Layout>
     </div>
   );
