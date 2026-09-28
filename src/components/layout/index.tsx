@@ -1,4 +1,5 @@
 import { Footer } from "@/components/layout/footer";
+import { BgMusicPlayer } from "@/components/layout/bg-music-player";
 
 interface Props {
   children: React.ReactNode;
@@ -11,7 +12,8 @@ export const Layout = ({ children }: Props) => {
   document.documentElement.style.setProperty("--vh", `${vh}px`);
 
   return (
-    <main className="w-full min-h-screen mx-auto shadow-center bg-primary-50 max-w-480 min-w-360">
+    <main className="relative w-full min-h-screen mx-auto shadow-center bg-primary-50 max-w-480 min-w-360">
+      <BgMusicPlayer />
       {children}
       <Footer />
     </main>
